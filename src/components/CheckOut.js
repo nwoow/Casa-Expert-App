@@ -1,86 +1,65 @@
-import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native'
-import React, { useState, useEffect, useContext } from 'react'
+import { StyleSheet, Text, TouchableOpacity, View, Image, FlatList } from 'react-native';
+import React, { useState, useEffect } from 'react';
 import Header from './Header';
 
 const CheckOut = ({ navigation, route }) => {
-
     const [totalPrice, setTotalPrice] = useState(0);
-    const { selectedProductDetails } = route.params;
-    const quantity=selectedProductDetails.quantity;
-    const subCategoryUid = selectedProductDetails.uid;
-    const productUid=selectedProductDetails.productUid
-    console.log(productUid)
-
+    const { cartItems } = route.params;
+   
     const calculateTotalPrice = () => {
-        let total = 0;
-
-        // Calculate total price for each item
-        total += selectedProductDetails.totalPrice; // Product price
-        total += 39; // Taxes and Fee
-        total += 49; // Distance Fee
-
-        // Set the total price to the state
+        const total = cartItems.reduce((sum, item) => sum + (item.dis_price * item.quantity), 0);
         setTotalPrice(total);
     };
 
     useEffect(() => {
         calculateTotalPrice();
-    }, [selectedProductDetails]);
+    }, []);
 
     return (
         <View style={styles.container}>
             <Header showBackButton={true} />
-
             <View style={styles.checkOutContainer}>
                 <Image source={require('./Images/checkout.png')} style={styles.checkOutIcon} />
                 <Text style={styles.checkOutHeading}>CheckOut</Text>
             </View>
 
-            <View style={{ padding: 20, borderWidth: 1, borderColor: 'silver', }}>
-                <View style={styles.itemContainer}>
-                    <Text style={styles.itemDetail}>Product:  {selectedProductDetails.name}</Text>
-                    {/* <Text style={styles.itemDetail}>₹{selectedProductDetails.totalPrice}</Text> */}
-                </View>
-                <View style={styles.itemContainer}>
-                    <View>
-                        <Text style={styles.itemDetail}>Quantity:  {selectedProductDetails.quantity}</Text>
+            <FlatList
+                data={cartItems}
+                keyExtractor={(item) => item.uid.toString()}
+                renderItem={({ item }) => (
+                    <View style={{ padding: 20, borderWidth: 1, borderColor: 'silver' }}>
+                        <View style={styles.itemContainer}>
+                            <Text style={styles.itemDetail}>Product: {item.product_name}</Text>
+                        </View>
+                        <View style={styles.itemContainer}>
+                            <View>
+                                <Text style={styles.itemDetail}>Quantity: {item.quantity}</Text>
+                            </View>
+                            <View>
+                                <Text style={styles.itemDetail}>{item.quantity} * {item.dis_price}</Text>
+                            </View>
+                        </View>
                     </View>
-                    <View>
-                        <Text style={styles.itemDetail}>{selectedProductDetails.quantity} * {selectedProductDetails.price}</Text>
-                    </View>
-                    <View>
-                        <Text style={styles.itemDetail}>₹{selectedProductDetails.totalPrice}</Text>
-                    </View>
-                </View>
-                <View style={styles.itemContainer}>
-                    <Text style={styles.itemDetail}>Taxes and Fee</Text>
-                    <Text style={styles.itemDetail}>₹39</Text>
-                </View>
-                <View style={styles.itemContainer}>
-                    <Text style={styles.itemDetail}>Distance Fee</Text>
-                    <Text style={styles.itemDetail}>₹49</Text>
-                </View>
-            </View>
+                )}
+            />
 
             <View style={{ paddingHorizontal: 20, paddingVertical: 10, flexDirection: 'row', justifyContent: "space-between" }}>
                 <Text style={styles.totalPrice}>Total Price</Text>
                 <Text style={styles.totalPrice}>₹{totalPrice}</Text>
             </View>
+
             <View style={styles.payOutButtonContainer}>
-            <TouchableOpacity style={styles.payOutButton} onPress={() => navigation.navigate('AddressSlot', {
+                <TouchableOpacity style={styles.payOutButton} onPress={() => navigation.navigate('AddressSlot', {
                     title: 'Add address and slot',
-                    subCategoryUid:subCategoryUid,
-                    productUid: productUid,
-                    productQuantity: quantity,
-                    totalPrice:totalPrice
-                },)}>
+                    cartItem: cartItems,
+                    totalPrice: totalPrice
+                })}>
                     <Text style={styles.payOutButtonText}>Add address and slot</Text>
                 </TouchableOpacity>
             </View>
-                                                            
         </View>
-    )
-}
+    );
+};
 
 export default CheckOut;
 
@@ -88,15 +67,13 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff',
-
     },
     checkOutHeading: {
         fontSize: 24,
         fontWeight: 'bold',
-        color:'black'
+        color: 'black'
     },
     payOutButtonContainer: {
-        flex: 1,
         justifyContent: "flex-end",
         padding: 10,
     },
@@ -134,11 +111,11 @@ const styles = StyleSheet.create({
     itemDetail: {
         fontSize: 18,
         fontWeight: '400',
-        color:'grey',
+        color: 'grey',
     },
     totalPrice: {
-        fontSize: 20,
-        fontWeight: '500'
+        fontSize: 24,
+        fontWeight: 'bold',
+        color:"black"
     }
-
-})
+});

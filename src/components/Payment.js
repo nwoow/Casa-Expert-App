@@ -17,14 +17,14 @@ function generateTransactionId() {
     return transactionId;
 }
 
-
 const Payment = ({ route, navigation }) => {
 
     const { title, bookingid, totalProductPrice, productUid } = route.params
     const { cartItems, setCartItems } = useGlobalContext();
     const [selectedPayment, setSelectedPayment] = useState(null);
 
-    console.log(typeof (totalProductPrice))
+    const productUids = cartItems.map(item => item.productUid);
+    console.log(productUids)
 
     const handlePayment = (async () => {
         if (selectedPayment === null) {

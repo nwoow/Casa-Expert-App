@@ -18,14 +18,22 @@ const AppProvider = ({ children, }) => {
     const [isItemAddedToCart, setIsItemAddedToCart] = useState(false);
 
     const AddToCart = async (item) => {
-        console.log('cartitem', cartItems);
+        const isSameSubCategory = await checkSubCategory(item);
+
+        if (!isSameSubCategory) {
+            // If the item belongs to a different subcategory, clear the cart
+            setCartItems([]);
+            AsyncStorage.removeItem('cart');
+            setMessage({ uid: item.uid, text: "Only items from the same category can be added to the cart" });
+        }
+        // console.log('sub_cateUid', item.subcat_uid);
         const existingItem = cartItems.find((cartItem) => {
+
             return cartItem.uid === item.uid;
         });
 
         if (existingItem) {
             setMessage({ uid: item.uid, text: "Already item in cart" });
-
         } else {
             setCartItems((prevCart) => {
                 const newCart = [...prevCart, { ...item, quantity: 1, totalPrice: item.dis_price }];
@@ -36,6 +44,22 @@ const AppProvider = ({ children, }) => {
             });
         }
     };
+
+    const checkSubCategory = async (item) => {
+        const cartItemString = await AsyncStorage.getItem('cart');
+        const cartItems = cartItemString ? JSON.parse(cartItemString) : [];
+
+        if (cartItems.length === 0 || cartItems[0].subcat_uid === item.subcat_uid) {
+            console.log("true");
+            return true
+
+        } else {
+            console.log('false');
+            await AsyncStorage.removeItem('cart');
+            return false
+        }
+    };
+
 
     const QuantityInc = (item) => {
         const updatedCartInc = cartItems.map(cartItem =>

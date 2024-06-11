@@ -1,17 +1,18 @@
 import { FlatList, StyleSheet, Text, View, Image, TouchableOpacity, Alert } from 'react-native'
-import React, { useEffect, useReducer, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Header from './Header'
 import { useGlobalContext } from './Context'
 import { baseUrl } from './Constant'
-import { useIsFocused, useNavigation } from '@react-navigation/native'
+import { useIsFocused, } from '@react-navigation/native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { ToastAndroid } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const Cart = ({ navigation }) => {
-  const { cartItems, message, setMessage, handleDecrement, QuantityInc,isLoggedIn, handleDeleteItem } = useGlobalContext()
+  const { cartItems, message, setMessage, handleDecrement, QuantityInc, isLoggedIn, handleDeleteItem } = useGlobalContext()
   const [token, setToken] = useState(null);
 
-console.log(isLoggedIn)
+  console.log(isLoggedIn)
 
   const useFocused = useIsFocused()
 
@@ -29,81 +30,14 @@ console.log(isLoggedIn)
     handleDecrement(item)
   }
 
-  // const reducer =  (state, action) => {
-  //   console.log(state)
-  //   switch (action.type) {
-  //     case 'INCREMENT':
-  //       const newCartIncrement = state.cartItems.map(item =>
-  //         item.uid === action.item.uid
-  //           ? {
-  //             ...item,
-  //             quantity: item.quantity + 1,
-  //             totalPrice: (item.quantity + 1) * item.dis_price
-  //           }
-  //           : item
-  //       );
-  //       AsyncStorage.setItem('cart', JSON.stringify(newCartIncrement));
-  //       return {
-  //         ...state,
-  //         cartItems: newCartIncrement
-  //       };
-
-  //     case 'DECREMENT':
-  //       const newCartDecrement = state.cartItems.map(item =>
-  //         item.uid === action.item.uid && item.quantity > 1
-  //           ? {
-  //             ...item,
-  //             quantity: item.quantity - 1,
-  //             totalPrice: (item.quantity - 1) * item.dis_price
-  //           }
-  //           : item
-  //       );
-  //     AsyncStorage.setItem('cart', JSON.stringify(newCartDecrement));
-  //       return {
-  //         ...state,
-  //         cartItems: newCartDecrement
-  //       };
-
-  //     case 'DELETECART':
-  //       const updatedCart = state.cartItems.filter((cartItem) => cartItem.uid !== action.item.uid);
-  //       console.log("updatedCart", updatedCart)
-  //       AsyncStorage.setItem('cart', JSON.stringify(updatedCart));
-
-  //       return {
-  //         ...state,
-  //         cartItems: setCartItems(updatedCart)
-  //       };
-  //   }
-
-  // };
-
-  // const initialState = {
-  //   cartItems: cartItems || [],
-  // };
-
-  // const [state, dispatch] = useReducer(reducer, cartItems);
-
-
   const handleService = () => {
     navigation.navigate("Home");
   };
 
-  const handleCheckout = async (item) => {
+  const handleCheckout = async () => {
     if (isLoggedIn) {
-      console.log('token',isLoggedIn)
-      const selectedProductDetails = {
-        name: item.product_name,
-        quantity: item.quantity,
-        price: item.dis_price,
-        totalPrice: item.totalPrice,
-        uid: item.sub_category,
-        productUid: item.uid,
-      };
-      // User is logged in, navigate to checkout page
-      navigation.navigate("CheckOut", { selectedProductDetails });
+      navigation.navigate("CheckOut", { cartItems });
     } else {
-      // User is not logged in, navigate to login page
-      console.log('token',isLoggedIn)
       navigation.navigate("Login");
     }
   };
@@ -128,14 +62,21 @@ console.log(isLoggedIn)
 
       {
         cartItems.length > 0 ?
-          <View style={{flex:1}}>
+          <View style={{ flex: 1 }}>
             <FlatList
-             data={cartItems}
+              data={cartItems}
               keyExtractor={(item) => (item ? item.uid.toString() : null)}
               renderItem={(({ item, index }) => {
                 return (
                   <View>
+                    <View style={{ alignItems: "flex-end", width: "98%" }}>
+                      <TouchableOpacity onPress={() => handleDelete(item)}
+                        style={styles.deleteButton}>
+                        <Icon name="close" size={25} color="#900" />
+                      </TouchableOpacity>
+                    </View>
                     <View style={styles.cartCheckout}>
+
                       <View>
                         <View style={{ width: '90%' }}>
                           <Text style={styles.productname}>{item.product_name}</Text>
@@ -144,7 +85,7 @@ console.log(isLoggedIn)
                           <Text style={styles.servicePrice}>{item.quantity}</Text>
                           <Text style={styles.servicePrice}>service</Text>
                           <View style={styles.dot} />
-                          <Text style={styles.servicePrice}>₹{item.totalPrice}</Text>
+                          <Text style={styles.servicePrice}>₹{item.dis_price}</Text>
                         </View>
                         <View style={styles.quantityContainer}>
                           <TouchableOpacity onPress={() => handleQuantityDecrement(item)}
@@ -161,8 +102,9 @@ console.log(isLoggedIn)
                       <View>
                         <Image src={`${baseUrl}${item.image}`} style={{ width: 80, height: 80 }} />
                       </View>
+
                     </View>
-                    <View style={{ flexDirection: "row", justifyContent: 'space-evenly', marginTop: 10, marginBottom: 10 }}>
+                    {/* <View style={{ flexDirection: "row", justifyContent: 'space-evenly', marginTop: 10, marginBottom: 10 }}>
                       <View>
                         <TouchableOpacity onPress={() => handleDelete(item)}
 
@@ -170,19 +112,13 @@ console.log(isLoggedIn)
                           <Text style={styles.deleteButtonText}>Delete</Text>
                         </TouchableOpacity>
                       </View>
-                      <View>
-                        <TouchableOpacity style={styles.checkOutButton} onPress={() => handleCheckout(item)}>
-                          <Text style={styles.checkOutButtonText}>Checkout</Text>
-                        </TouchableOpacity>
-                      </View>
-
-                    </View>
+                    </View> */}
                     <View style={styles.horizontalLine} />
                   </View>
                 )
-              
+
               })}
-               />
+            />
           </View>
           : <View style={{ flex: 1, justifyContent: "center", alignItems: 'center' }}>
             <Text style={styles.emptyText}>Your cart is empty</Text>
@@ -202,6 +138,14 @@ console.log(isLoggedIn)
           </View>
         )
       }
+
+      {cartItems.length > 0 && (
+        <View style={{  justifyContent: "flex-end", alignItems: "center", marginBottom: 10 }}>
+          <TouchableOpacity style={styles.checkOutButton} onPress={() => handleCheckout(cartItems[0])}>
+            <Text style={styles.checkOutButtonText}>Checkout</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
     </View>
   )
@@ -224,7 +168,7 @@ const styles = StyleSheet.create({
   cartText: {
     fontSize: 24,
     fontWeight: "500",
-    color:"black"
+    color: "black"
   },
   horizontalLine: {
     borderBottomColor: 'lightgrey',
@@ -240,7 +184,7 @@ const styles = StyleSheet.create({
   productname: {
     fontSize: 24,
     fontWeight: "500",
-    color:"black"
+    color: "black"
 
   },
   servicePrice: {
@@ -255,26 +199,21 @@ const styles = StyleSheet.create({
     backgroundColor: 'grey',
   },
   deleteButton: {
-    borderWidth: 1,
-    paddingVertical: 10,
+    borderRadius: "50%",
     paddingHorizontal: 20,
     borderRadius: 5,
-    width: 150,
     alignItems: 'center',
-    borderColor: 'silver'
+    borderColor: 'silver',
+    backgroundColor: 'white'
   },
-  deleteButtonText: {
-    color: 'black',
-    fontSize: 16,
-    fontWeight: '500',
-  },
+
   checkOutButton: {
     backgroundColor: '#4b0082',
     borderWidth: 1,
-    paddingVertical: 10,
+    paddingVertical: 15,
     paddingHorizontal: 20,
     borderRadius: 5,
-    width: 150,
+    width: "95%",
     alignItems: 'center',
     borderColor: 'silver'
   },
@@ -319,14 +258,14 @@ const styles = StyleSheet.create({
     width: 100,
     backgroundColor: '#rgb(245, 242, 253)',
     borderColor: "#rgb(110, 66, 229)",
-},
+  },
   quantityButton: {
     fontSize: 20,
     fontWeight: '600',
     marginHorizontal: 20,
     color: '#rgb(110, 66, 229)',
   },
-  quantity:{
-    color:'#rgb(110, 66, 229)',
+  quantity: {
+    color: '#rgb(110, 66, 229)',
   }
 })

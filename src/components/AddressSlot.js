@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, TouchableOpacity, Image, ActivityIndicator, FlatList, TextInput, ScrollView } from 'react-native'
 import React, { useState, useEffect } from 'react'
-import { format, addDays } from 'date-fns';
+import { format, addDays ,startOfDay, formatDate} from 'date-fns';
 import Geolocation from 'react-native-geolocation-service';
 import axios from 'axios'
 import { baseUrl } from './Constant';
@@ -20,10 +20,10 @@ const getLocation = () => {
 
 const AddressSlot = ({ route, navigation }) => {
     //geting props 
-    const { title, subCategoryUid, productUid, productQuantity, totalPrice } = route.params;
+    const { title, productUid, productQuantity, totalPrice,cartItem } = route.params;
     const [dates, setDates] = useState([]);
-    const [selectedDate, setSelectedDate] = useState();
-    const [selectedTime, setSelectedTime] = useState();
+    const [selectedDate, setSelectedDate] =  useState(dates);
+    const [selectedTime, setSelectedTime] = useState( );
     const [location, setLocation] = useState(null);
     const [pincode, setPinCode] = useState()
     const [address, setAddress] = useState()
@@ -37,16 +37,18 @@ const AddressSlot = ({ route, navigation }) => {
     const { emailId, setEmailId, phoneNumber, setPhoneNumber, name, setName, profileData, setCartItems, cartItems } = useGlobalContext()
 
     //subCategoryUid 
-    const uid = subCategoryUid;
+     const uid = cartItem[0].subcat_uid;
     const totalProductPrice = totalPrice;
 
     const handleTime = (async () => {
         setLoading(true)
+        const sdate=selectedDate;
         const token = await AsyncStorage.getItem('token')
-        await axios.get(`${baseUrl}/api/time-slot/${uid}`, {
+        await axios.get(`${baseUrl}/api/time-slot/${uid}?sdate=${sdate}`, {
             headers: { 'Authorization': `Bearer ${token}` },
         })
             .then((res) => {
+                // console.log(res.data)
                 setTimeSlot(res.data.time_slot)
                 setLoading(false)
             })
@@ -68,13 +70,21 @@ const AddressSlot = ({ route, navigation }) => {
         const formattedDate = `${currentYear}-${currentMonth}-${date}`;
         setStyleDate(item)
         setSelectedDate(formattedDate);
+        setSelectedTime(null)
     };
 
     const handleTimeSelect = (item) => {
         setSelectedTime(item.uid)
     }
 
+    useEffect(() => {
+        if (selectedDate) {
+            handleTime();
+        }
+    }, [selectedDate]);
+
     const handleOrder = async () => {
+        console.log('jkfdvfgvgevercwrfc')
         try {
             if (!selectedTime || !selectedDate || !pincode || !address || !scity || !states || !localitys) {
                 console.log(selectedTime);
@@ -103,8 +113,9 @@ const AddressSlot = ({ route, navigation }) => {
             const response = await axios.post(`${baseUrl}/api/orderlist/`, data, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
-            setLoading(false);
             if (response.data.status === 200) {
+                setLoading(false);
+                console.log(res.data)
                 navigation.navigate("Payment", {
                     title: 'Choose Payment Option',
                     bookingid: response.data.orderuid,
@@ -197,7 +208,6 @@ useEffect(()=>{
                         data={dates}
                         horizontal={true}
                         renderItem={({ item, index }) => {
-                            console.log(item)
                             return (
                                 <View style={[styles.dateContainer, styleDate === item && styles.selectedDateContainer]} >
                                     <TouchableOpacity style={{ alignItems: 'center' }} onPress={() => handleDate(item)}>
@@ -216,9 +226,9 @@ useEffect(()=>{
                         data={timeSlot}
                         horizontal={true}
                         renderItem={({ item, index }) => {
-                            console.log('item', item)
+                            console.log('item', item.available)
                             return (
-                                <View style={[styles.timeContainer, selectedTime === item.uid && styles.selectedDateContainer]}>
+                                <View style={[styles.timeContainer, selectedTime === item.uid && styles.selectedDateContainer,!item.available && styles.disabledButtonContainer]}>
                                     {
                                         loading ?
 
@@ -227,8 +237,10 @@ useEffect(()=>{
                                             </View>)
                                             :
                                             (
-                                                < TouchableOpacity onPress={() => handleTimeSelect(item)}>
-                                                    <Text style={styles.timeText}>{item.start_time}</Text>
+                                                < TouchableOpacity onPress={() => handleTimeSelect(item)}
+                                                disabled={!item.available}
+                                                >
+                                                    <Text style={[styles.timeText,!item.available && styles.disabledButton]}>{item.start_time}</Text>
                                                 </TouchableOpacity>
                                             )}
                                 </View>
@@ -420,5 +432,8 @@ const styles = StyleSheet.create({
     },
     timeSlect: {
         backgroundColor: "red"
-    }
+    },
+    disabledButtonContainer: {
+        backgroundColor: 'lightgrey',
+    },
 })
