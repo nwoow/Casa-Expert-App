@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, TouchableOpacity, Image, ActivityIndicator, FlatList, TextInput, ScrollView } from 'react-native'
 import React, { useState, useEffect } from 'react'
-import { format, addDays ,startOfDay, formatDate} from 'date-fns';
+import { format, addDays,  } from 'date-fns';
 import Geolocation from 'react-native-geolocation-service';
 import axios from 'axios'
 import { baseUrl } from './Constant';
@@ -20,10 +20,10 @@ const getLocation = () => {
 
 const AddressSlot = ({ route, navigation }) => {
     //geting props 
-    const { title, productUid, productQuantity, totalPrice,cartItem } = route.params;
+    const { title, totalPrice, cartItem } = route.params;
     const [dates, setDates] = useState([]);
-    const [selectedDate, setSelectedDate] =  useState(dates);
-    const [selectedTime, setSelectedTime] = useState( );
+    const [selectedDate, setSelectedDate] = useState(dates);
+    const [selectedTime, setSelectedTime] = useState();
     const [location, setLocation] = useState(null);
     const [pincode, setPinCode] = useState()
     const [address, setAddress] = useState()
@@ -33,22 +33,28 @@ const AddressSlot = ({ route, navigation }) => {
     const [timeSlot, setTimeSlot] = useState('')
     const [loading, setLoading] = useState(false)
     const [message, setMessage] = useState('')
-    const [styleDate,setStyleDate] =useState('')
+    const [styleDate, setStyleDate] = useState('')
     const { emailId, setEmailId, phoneNumber, setPhoneNumber, name, setName, profileData, setCartItems, cartItems } = useGlobalContext()
 
     //subCategoryUid 
-     const uid = cartItem[0].subcat_uid;
-    const totalProductPrice = totalPrice;
+    const uid = cartItem[0].subcat_uid;
+   
+    // Create productList
+    const filteredProducts = cartItems.map(product => ({
+        uid: product.uid,
+        quantity: product.quantity
+    }));
 
+     const totalProductPrice = totalPrice;
+    
     const handleTime = (async () => {
         setLoading(true)
-        const sdate=selectedDate;
+        const sdate = selectedDate;
         const token = await AsyncStorage.getItem('token')
         await axios.get(`${baseUrl}/api/time-slot/${uid}?sdate=${sdate}`, {
             headers: { 'Authorization': `Bearer ${token}` },
         })
             .then((res) => {
-                // console.log(res.data)
                 setTimeSlot(res.data.time_slot)
                 setLoading(false)
             })
@@ -60,7 +66,7 @@ const AddressSlot = ({ route, navigation }) => {
 
     const handleDate = (item) => {
         // Format the selected date in 'yyyy-MM-dd' format
-        const { date } = item; 
+        const { date } = item;
         // Assuming current year and month
         const currentDate = new Date();
         const currentYear = currentDate.getFullYear();
@@ -84,7 +90,7 @@ const AddressSlot = ({ route, navigation }) => {
     }, [selectedDate]);
 
     const handleOrder = async () => {
-        console.log('jkfdvfgvgevercwrfc')
+
         try {
             if (!selectedTime || !selectedDate || !pincode || !address || !scity || !states || !localitys) {
                 console.log(selectedTime);
@@ -95,9 +101,8 @@ const AddressSlot = ({ route, navigation }) => {
                 setMessage("Please fill in all required fields");
                 return;
             }
-
             const token = await AsyncStorage.getItem('token');
-            const product_uid = `${productUid}`;
+            const product_list= filteredProducts;
             const full_name = name;
             const email = emailId;
             const addressline = address;
@@ -108,21 +113,24 @@ const AddressSlot = ({ route, navigation }) => {
             const zipcode = pincode;
             const time_slot = selectedTime;
             const booking_time = selectedDate;
-            const quantity = `${productQuantity}`;
-            const data = { full_name, email, addressline, city, state, phone, locality, zipcode, time_slot, booking_time, product_uid, quantity }
+            const paid_amount= totalProductPrice
+            const data = { full_name, email, addressline, city, state, phone, locality, zipcode, time_slot, booking_time, product_list,paid_amount  }
+
             const response = await axios.post(`${baseUrl}/api/orderlist/`, data, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
+            console.log("response", response.data)
             if (response.data.status === 200) {
+                console.log('Navigating to Payment screen');
                 setLoading(false);
-                console.log(res.data)
                 navigation.navigate("Payment", {
                     title: 'Choose Payment Option',
                     bookingid: response.data.orderuid,
                     totalProductPrice: totalProductPrice,
-                    productUid: productUid,
+                    productUid: filteredProducts,
                 });
             } else {
+                console.log('Received non-200 status:', response.data.status);
                 ToastAndroid.show("Something went wrong", ToastAndroid.SHORT);
             }
         } catch (error) {
@@ -157,7 +165,6 @@ const AddressSlot = ({ route, navigation }) => {
     }, [])
 
     const fetchLocationData = async () => {
-      
         try {
             const location = await getLocation();
             console.log('tyui')
@@ -188,10 +195,10 @@ const AddressSlot = ({ route, navigation }) => {
         }
     };
 
-useEffect(()=>{
-    fetchLocationData();
-},[])
-       
+    useEffect(() => {
+        fetchLocationData();
+    }, [])
+
     return (
         <ScrollView style={styles.container}>
             <View >
@@ -228,7 +235,7 @@ useEffect(()=>{
                         renderItem={({ item, index }) => {
                             console.log('item', item.available)
                             return (
-                                <View style={[styles.timeContainer, selectedTime === item.uid && styles.selectedDateContainer,!item.available && styles.disabledButtonContainer]}>
+                                <View style={[styles.timeContainer, selectedTime === item.uid && styles.selectedDateContainer, !item.available && styles.disabledButtonContainer]}>
                                     {
                                         loading ?
 
@@ -238,9 +245,9 @@ useEffect(()=>{
                                             :
                                             (
                                                 < TouchableOpacity onPress={() => handleTimeSelect(item)}
-                                                disabled={!item.available}
+                                                    disabled={!item.available}
                                                 >
-                                                    <Text style={[styles.timeText,!item.available && styles.disabledButton]}>{item.start_time}</Text>
+                                                    <Text style={[styles.timeText, !item.available && styles.disabledButton]}>{item.start_time}</Text>
                                                 </TouchableOpacity>
                                             )}
                                 </View>

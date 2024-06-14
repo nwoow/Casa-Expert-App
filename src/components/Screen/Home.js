@@ -1,12 +1,10 @@
 import { ActivityIndicator, Image, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, Modal, View, Button, FlatList, Dimensions } from 'react-native'
-import React, { useEffect, useState, useCallback } from 'react'
+import React, { useEffect, useState, useCallback, } from 'react'
 import Header from '../Header'
 import MostBookedService from '../MostBookedService'
 import RepairService from '../RepairService'
 import ServiceModel from '../ServiceModel'
 import { useIsFocused } from '@react-navigation/native'
-// import { useFonts, OpenSans_400Regular, OpenSans_600SemiBold } from '@expo-google-fonts/open-sans'
-// import * as SplashScreen from 'expo-splash-screen';
 import axios from 'axios'
 import { baseUrl } from '../Constant'
 import Search from '../Search'
@@ -30,11 +28,11 @@ const Home = ({ route, }) => {
 
     const useFocused = useIsFocused()
 
-    // const imageData = [
-    //     { id: '1', videoUri: require('../Images/repairing.mp4') },
-    //     { id: '2', videoUri: require('../Images/rec.mp4') },
-    //     { id: '3', videoUri: require('../Images/repairing.mp4') },
-    // ];
+    const imageData = [
+        { id: '1', videoUri: require('../Images/repairing.mp4') },
+        { id: '2', videoUri: require('../Images/rec.mp4') },
+        { id: '3', videoUri: require('../Images/repairing.mp4') },
+    ];
 
     const handleAddressChange = useCallback(async () => {
         if (!newAddress) {
@@ -135,6 +133,38 @@ const Home = ({ route, }) => {
     //     return <ActivityIndicator size="large" color="red" />;
     // }
 
+    // const renderVideoItem = ({ item,index}) => (
+    //     <View style={styles.videoWrapper}>
+    //         <Video
+    //             source={item.videoUri}
+    //             style={styles.video}
+    //             resizeMode="cover"
+    //             repeat
+    //             paused={false}
+    //             onLoad={() => {
+    //                 // Ensure the video starts playing
+    //                 if (videoRefs.current[index]) {
+    //                     videoRefs.current[index].seek(0);
+    //                 }
+    //             }}
+    //             ref={(ref) => {
+    //                 videoRefs.current[index] = ref;
+    //             }}
+    //         />
+    //     </View>
+    // );
+
+    // const videoRefs = useRef([]);
+
+    // useEffect(() => {
+    //     // Ensure all videos are playing
+    //     videoRefs.current.forEach(ref => {
+    //         if (ref) {
+    //             ref.seek(0);
+    //         }
+    //     });
+    // }, []);
+
     return (
         <View style={styles.container}>
             <ScrollView>
@@ -209,19 +239,10 @@ const Home = ({ route, }) => {
                 {/* <FlatList
                     data={imageData}
                     keyExtractor={item => item.id}
-                    renderItem={({ item }) => (
-                        <View style={styles.videoWrapper}>
-                            <Video
-                                source={item.videoUri}
-                                style={styles.video}
-                                resizeMode="cover"
-                                repeat
-                                paused={false}
-                            />
-                        </View>
-                    )}
+                    renderItem={renderVideoItem}
                     horizontal={true}
                     showsHorizontalScrollIndicator={false}
+                    initialNumToRender={imageData.length}  // Ensures all videos are rendered
                 /> */}
 
                 {/* Most Booked service start */}
@@ -300,8 +321,8 @@ const styles = StyleSheet.create({
         marginRight: 10,
         borderRadius: 10,
         overflow: 'hidden', // This is crucial for borderRadius to work on the wrapper
-        marginTop:20,
-        
+        marginTop: 20,
+
     },
     video: {
         width: '100%',

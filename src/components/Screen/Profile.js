@@ -5,6 +5,7 @@ import axios from 'axios'
 import { baseUrl } from '../Constant'
 import { useGlobalContext } from '../Context'
 import { useIsFocused, } from '@react-navigation/native'
+import Header from '../Header'
 
 
 const Profile = ({ navigation }) => {
@@ -61,6 +62,7 @@ const Profile = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
+
             {
                 isLoading ? (
                     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -69,13 +71,13 @@ const Profile = ({ navigation }) => {
                 ) :
                     isLoggedIn ? (
                         <>
+                         <Header showBackButton={true} />
                             <View style={{ padding: 25, backgroundColor: "#fff" }}>
                                 {name ? (
                                     <Text style={styles.name}>{name}</Text>
                                 ) : (
                                     <Text style={styles.name}>Verified Customer</Text>
-                                )}
-
+                                )}                               
                                 <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: 5 }}>
                                     <Text style={{ fontSize: 16, color: "black" }}>+91{phone}</Text>
                                     <TouchableOpacity onPress={() => navigation.navigate('EditProfile', { phone_number: phone, fullName: name, email: email })}>
@@ -135,7 +137,9 @@ const Profile = ({ navigation }) => {
                         </>
                     ) :
                         (
+                            
                             <View style={styles.container}>
+                            
                                 <View style={{ flexDirection: "row", padding: 20, gap: 50, alignItems: "center", backgroundColor: "black" }}>
                                     <TouchableOpacity onPress={() => navigation.goBack()}>
                                         <Image style={styles.backImg} source={require('../Images/arrow.png')} />
@@ -191,7 +195,7 @@ const styles = StyleSheet.create({
     editText: {
         fontSize: 20,
         fontWeight: '400',
-        color: 'black',
+        color: 'white',
     },
     backImg: {
         tintColor: "white",

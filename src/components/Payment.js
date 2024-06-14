@@ -26,120 +26,85 @@ const Payment = ({ route, navigation }) => {
     const productUids = cartItems.map(item => item.productUid);
     console.log(productUids)
 
-    const handlePayment = (async () => {
+    const handlePayment = async () => {
         if (selectedPayment === null) {
-            alert('Error', 'Please select a payment method.')
+            Alert.alert('Error', 'Please select a payment method.');
             return;
         }
-        const token = await AsyncStorage.getItem('token')
+        const token = await AsyncStorage.getItem('token');
         const uid = bookingid;
 
         if (selectedPayment === 'cash') {
             console.log('Processing Cash on Delivery');
-            const paymenttype = 'cod'
-            axios.post(`${baseUrl}/api/generate-booking/`, { uid, paymenttype }, {
-                headers: { 'Authorization': `Bearer ${token}` },
-            })
-                .then((res) => {
-                    console.log(res.data)
-                    if (res.data.status === 200) {
-                        const orderedItem = { uid: productUid };
-                        removeOrderedItems([orderedItem]);
-
-                        navigation.navigate('thanku')
-                    }
-                    else (
-                        console.log('Something Work')
-                    )
-                })
-                .catch((error) => {
-                    console.log(error)
-                })
-
-
+            const paymenttype = 'cod';
+            try {
+                const res = await axios.post(`${baseUrl}/api/generate-booking/`, { uid, paymenttype }, {
+                    headers: { 'Authorization': `Bearer ${token}` },
+                });
+                console.log(res.data);
+                if (res.data.status === 200) {
+                    await AsyncStorage.removeItem('cartItems');
+                    setCartItems([]);
+                    navigation.navigate('thanku');
+                } else {
+                    console.log('Something went wrong');
+                }
+            } catch (error) {
+                console.log(error);
+            }
         } else if (selectedPayment === 'phonepay') {
             console.log('Processing PhonePe payment');
-            console.log('PhonePe payment');
-            // 
             const environmentForSDK = 'SANDBOX'; // or 'PRODUCTION', depending on your environment
             const merchantIds = 'PGTESTPAYUAT';
             const appId = null; // Replace with your app ID if available
             const isDebuggingEnabled = true; // or false, depending on your requirement
-            PhonePePaymentSDK.init(
-                environmentForSDK,
-                merchantIds,
-                appId,
-                isDebuggingEnabled
-            ).then(result => {
-                console.log('Sucessfully initializing SDK', result)
-            })
-            const merchantid = generateTransactionId()
-            const payload = {
-                "merchantId": "PGTESTPAYUAT143",
-                "merchantTransactionId": merchantid,
-                "merchantUserId": "MUID123",
-                "amount": totalProductPrice * 100,
-                "callbackUrl": "https://casaxprt.com/paymentcallback",
-                "mobileNumber": "9931589733",
-                "paymentInstrument": {
-                    "type": "PAY_PAGE"
-                }
-            };
+            try {
+                await PhonePePaymentSDK.init(environmentForSDK, merchantIds, appId, isDebuggingEnabled);
+                console.log('Successfully initialized SDK');
 
-            const jsonString = JSON.stringify(payload);
-
-            // Convert JSON payload to Base64
-            const base64EncodedPayload = base64.encode(jsonString);
-            console.log('Base64', base64EncodedPayload)
-
-            // Calculate checksum
-            const endPoint = "/pg/v1/pay";
-            const salt = 'ab3ab177-b468-4791-8071-275c404d8ab0'; // Replace with your salt
-            const saltIndex = '1'; // Replace with your salt index
-            const checksum = CryptoJS.SHA256(base64EncodedPayload + endPoint + salt).toString() + '###' + saltIndex;
-            const body = base64EncodedPayload;
-            const packageName = 'com.example.awesomeapp';
-            const appSchema = 'app';
-            console.log(checksum)
-            // making server request before payment
-            axios.post(`${baseUrl}/api/generate-booking/`, { uid, merchantid }, {
-                headers: { 'Authorization': `Bearer ${token}` },
-            })
-                .then((res) => {
-                    console.log(res.data)
-                    if (res.data.status === 200) {
-                        PhonePePaymentSDK.startTransaction(body, checksum, packageName, appSchema)
-                            .then(res => {
-                                console.log(res)
-                                if (res.status === "SUCCESS") {
-                                    const orderedItem = { uid: productUid };
-                                    removeOrderedItems([orderedItem]);
-                                    navigation.navigate('thanku')
-                                }
-
-                            })
-                            .catch(error => { console.log(error) })
-
-                            .catch(error => {
-                                console.error("Error initializing SDK:", error);
-                            });
-
-
+                const merchantid = generateTransactionId();
+                const payload = {
+                    "merchantId": "PGTESTPAYUAT143",
+                    "merchantTransactionId": merchantid,
+                    "merchantUserId": "MUID123",
+                    "amount": totalProductPrice * 100,
+                    "callbackUrl": "https://casaxprt.com/paymentcallback",
+                    "mobileNumber": "9931589733",
+                    "paymentInstrument": {
+                        "type": "PAY_PAGE"
                     }
-                    else (
-                        console.log('Something Work')
-                    )
-                })
-                .catch((error) => {
-                    console.log(error)
-                })
-        }
-    })
+                };
 
-    const removeOrderedItems = (orderedItems) => {
-        const updatedCart = cartItems.filter(item => !orderedItems.some(orderedItem => orderedItem.uid === item.uid));
-        setCartItems(updatedCart);
-        AsyncStorage.setItem('cart', JSON.stringify(updatedCart));
+                const jsonString = JSON.stringify(payload);
+                const base64EncodedPayload = base64.encode(jsonString);
+                const endPoint = "/pg/v1/pay";
+                const salt = 'ab3ab177-b468-4791-8071-275c404d8ab0'; // Replace with your salt
+                const saltIndex = '1'; // Replace with your salt index
+                const checksum = CryptoJS.SHA256(base64EncodedPayload + endPoint + salt).toString() + '###' + saltIndex;
+                const body = base64EncodedPayload;
+                const packageName = 'com.casaxprt';
+                const appSchema = 'app';
+                console.log(checksum);
+
+                const res = await axios.post(`${baseUrl}/api/generate-booking/`, { uid, merchantid }, {
+                    headers: { 'Authorization': `Bearer ${token}` },
+                });
+                console.log(res.data);
+                if (res.data.status === 200) {
+                    const phonePeResult = await PhonePePaymentSDK.startTransaction(body, checksum, packageName, appSchema);
+                    console.log(phonePeResult);
+                    if (phonePeResult.status === "SUCCESS") {
+                        await AsyncStorage.removeItem('cartItems');
+                        setCartItems([]);
+                        navigation.navigate('thanku');
+                    }
+                } else {
+                    console.log('Something went wrong');
+                }
+            } catch (error) {
+                console.error("Error initializing SDK:", error);
+            }
+        }
     };
 
     return (
