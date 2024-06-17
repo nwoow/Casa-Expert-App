@@ -32,7 +32,6 @@ const ModalCart = ({ cartItems }) => {
                     </TouchableOpacity>
                 </View>
             </View>
-
         </View>
 
     );

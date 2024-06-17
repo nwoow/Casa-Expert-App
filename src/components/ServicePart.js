@@ -11,7 +11,6 @@ import ModalCart from './ModalCart';
 
 const ServicePart = ({ route }) => {
     const [product, setProduct] = useState([]);
-
     const { AddToCart, cartItems, QuantityInc, handleDecrement, message, isItemAddedToCart } = useGlobalContext();
     const { uid, category } = route.params;
     const isFocused = useIsFocused();
@@ -46,7 +45,7 @@ const ServicePart = ({ route }) => {
         <View style={{ flex: 1, backgroundColor: 'white' }}>
             <Header showBackButton={true} showCart={true} />
             <View style={[styles.shadow, { paddingHorizontal: 25, padding: 10 }]}>
-                <Text style={{ fontSize: 30, fontWeight: '500', fontFamily: 'OpenSans_600SemiBold' }}>{category}</Text>
+                <Text style={{ fontSize: 30, fontWeight: '500', fontFamily: 'OpenSans_600SemiBold',color:"black" }}>{category}</Text>
             </View>
             <FlatList
                 data={product}

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity, Image, ActivityIndicator } from 'react-native'
 import React, { useState } from 'react'
 import axios from 'axios'
 import { baseUrl } from './Constant'
@@ -22,6 +22,7 @@ const Payment = ({ route, navigation }) => {
     const { title, bookingid, totalProductPrice, productUid } = route.params
     const { cartItems, setCartItems } = useGlobalContext();
     const [selectedPayment, setSelectedPayment] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     const productUids = cartItems.map(item => item.productUid);
     console.log(productUids)
@@ -31,6 +32,7 @@ const Payment = ({ route, navigation }) => {
             Alert.alert('Error', 'Please select a payment method.');
             return;
         }
+        setLoading(true);
         const token = await AsyncStorage.getItem('token');
         const uid = bookingid;
 
@@ -91,6 +93,7 @@ const Payment = ({ route, navigation }) => {
                 });
                 console.log(res.data);
                 if (res.data.status === 200) {
+                    setLoading(false);
                     const phonePeResult = await PhonePePaymentSDK.startTransaction(body, checksum, packageName, appSchema);
                     console.log(phonePeResult);
                     if (phonePeResult.status === "SUCCESS") {
@@ -103,6 +106,9 @@ const Payment = ({ route, navigation }) => {
                 }
             } catch (error) {
                 console.error("Error initializing SDK:", error);
+            }
+            finally {
+                setLoading(false);
             }
         }
     };
@@ -129,12 +135,15 @@ const Payment = ({ route, navigation }) => {
                 >
                     <Text style={styles.optionText}>Online Payment</Text>
                 </TouchableOpacity>
-
                 <TouchableOpacity
                     style={[styles.payButton, selectedPayment === null && styles.disabledButton]}
                     onPress={handlePayment}
-                    disabled={selectedPayment === null}>
-                    <Text style={styles.payButtonText}>Place Order</Text>
+                    disabled={selectedPayment === null || loading}>
+                    {loading ? (
+                        <ActivityIndicator size="small" color="#ffffff" />
+                    ) : (
+                        <Text style={styles.payButtonText}>Place Order</Text>
+                    )}
                 </TouchableOpacity>
             </View>
         </View>

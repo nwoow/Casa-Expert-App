@@ -1,61 +1,77 @@
-import { StyleSheet, Text, View, StatusBar, Image, ActivityIndicator, TouchableOpacity, FlatList } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import { StyleSheet, Text, View, ActivityIndicator, Image, TouchableOpacity, FlatList } from 'react-native';
+import React, { useEffect, useState } from 'react';
 import Header from '../Header';
 import { baseUrl } from '../Constant';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
+import { useGlobalContext } from '../Context';
+import BookingProducts from '../bookingProducts';
+
 
 const Booking = ({ navigation }) => {
+  const isFocused = useIsFocused();
+  const { isLoggedIn } = useGlobalContext();
+  const [order, setOrder] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
 
-  const useFocused = useIsFocused()
-
-  const [order, setOrder] = useState([])
-  const [loading, setLoading] = useState(true)
-
-  const bookingOrder = (async () => {
-    const token = await AsyncStorage.getItem('token')
-    await axios.get(`${baseUrl}/api/orderlist/`, {
-      headers: { 'Authorization': `Bearer ${token}` },
-    })
-      .then((res) => {
-
-        setOrder(res.data.order)
-        setLoading(false)
-
-      })
-      .catch((error) => {
-        console.log(error)
-        setLoading(false)
-      })
-  })
+  const bookingOrder = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      const response = await axios.get(`${baseUrl}/api/orderlist/`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      console.log(response.data.order[0].booking_products[0]);
+      setOrder(response.data.order);
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    }
+  };
 
   const CancelBooking = async (item) => {
-    const uid = item.uid
-    console.log(uid)
-    const token = await AsyncStorage.getItem('token')
+    const uid = item.uid;
+    console.log(uid);
+    const token = await AsyncStorage.getItem('token');
     await axios.post(`${baseUrl}/api/cancel-booking/`, { uid }, {
       headers: { 'Authorization': `Bearer ${token}` },
     })
       .then((res) => {
-        console.log(res.data)
-        alert(res.data.message)
+        console.log(res.data);
+        alert(res.data.message);
         bookingOrder();
       })
       .catch((error) => {
-        console.log(error)
+        console.log(error);
+      });
+  };
 
-      })
-  }
+  const handleProductDetail = (item) => {
+    navigation.navigate("ServicePart", { uid: item.product.sub_category, category: "" });
+  };
 
-  const handleProductDetail = ((item) => {
-    navigation.navigate("ServicePart", { uid: item.product.sub_category, category: "" })
+  const handleProductDetailPress = (item) => {
+    setSelectedItem(item);
+    setModalVisible(true);
+  };
 
-  })
+  const handleCloseModal = () => {
+    setModalVisible(false);
+    console.log('ghjkl')
+    setSelectedItem(null);
+  };
+
 
   useEffect(() => {
-    bookingOrder()
-  }, [useFocused])
+    if (isLoggedIn) {
+      bookingOrder();
+    } else {
+      setLoading(false);
+    }
+  }, [isFocused]);
 
   return (
     <View style={styles.container}>
@@ -64,91 +80,84 @@ const Booking = ({ navigation }) => {
         <Text style={styles.bookingText}>My Booking</Text>
       </View>
       <View style={{ padding: 10, alignSelf: 'center' }}>
-        <Text style={{ fontSize: 11, fontWeight: '500', color: 'red' }}>Note:-You Can Cancel Only before 1hr Booking Time/Date</Text>
+        <Text style={{ fontSize: 11, fontWeight: '500', color: 'red' }}>Note:- You Can Cancel Only before 1hr Booking Time/Date</Text>
       </View>
 
-      {
-        loading ? <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+      {loading ? (
+        <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
           <ActivityIndicator size="large" color="#0000ff" />
         </View>
-          :
-          <FlatList
-            data={order}
-            keyExtractor={(item) => item.uid}
-            renderItem={({ item }) => {
-              return (
-                <>
-                  {
-                    item && item.product ? (
-                      <View style={styles.productContainer} >
-                        <View style={{ marginHorizontal: 15, marginBottom: 10, flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-                          <View>
-                            <Image source={require('../Images/status.png')} style={{ height: 35, width: 35 }} />
-                          </View>
-                          <Text style={{ fontSize: 16, fontWeight: 500, color: 'black' }}>{item.status}</Text>
-                        </View>
-                        <View style={{ flexDirection: "row", alignItems: 'center', gap: 20, backgroundColor: '#f5f5f5', borderRadius: 5, padding: 10 }}>
-                          <Image src={`${baseUrl}/${item.product.image}`} alt='product image' style={styles.productImage} />
-                          <TouchableOpacity onPress={() => handleProductDetail(item)}>
-                            <View style={{ marginLeft: 20, width: '90%' }}>
-                              <View >
-                                <Text style={{ fontSize: 16, fontWeight: "500", color: 'black' }}>{item.product.product_name}</Text>
-                              </View>
-                              <View style={{ flexDirection: 'row', gap: 10, marginTop: 5 }}>
-                                <Text style={{ fontSize: 14, color: 'black' }}>Booking Date:</Text>
-                                <Text style={{ fontSize: 14, color: 'black' }}>{item.booking_time}</Text>
-                              </View>
-                              <View style={{ flexDirection: 'row', gap: 10, marginTop: 5 }}>
-                                <Text style={{ fontSize: 14, color: 'black' }}>Booking Time:</Text>
-                                {item.time_slot && item.time_slot.start_time ?
-                                  <Text style={{ fontSize: 14, color: 'black' }}>{item.time_slot.start_time}</Text>
-                                  : null
-                                }
+      ) : isLoggedIn ? (
+        <FlatList
+          data={order}
+          keyExtractor={(item) => item.uid}
+          renderItem={({ item }) => (
+            <View style={styles.bookingContainer}>
+              <TouchableOpacity onPress={() => handleProductDetailPress(item)} >
+                <View style={styles.bookingCard}>
+                  <View style={{ marginBottom: 10, flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                    <Image source={require('../Images/status.png')} style={{ height: 35, width: 35 }} />
+                    <Text style={{ fontSize: 18, fontWeight: '500', color: 'black' }}>{item?.status}</Text>
+                  </View>
+                  <Text style={styles.bookingText}>Invoice No:{item.invoice_no}</Text>
+                  <View style={{ flexDirection: 'row', gap: 10, marginTop: 5 }}>
+                    <Text style={styles.bookingText}>Booking Date:</Text>
+                    <Text style={styles.bookingText}>{item?.booking_time}</Text>
+                  </View>
+                  <View style={{ flexDirection: 'row', gap: 10, marginTop: 5 }}>
+                    <Text style={styles.bookingText}>Booking Time:</Text>
+                    {item?.time_slot && item.time_slot.start_time ?
+                      <Text style={styles.bookingText}>{item.time_slot.start_time}</Text>
+                      : null
+                    }
+                  </View>
+                  <Text style={styles.bookingText}>Total Price:{item.paid_amount}</Text>
+                  {item.is_paid ? (
+                    <Text style={styles.bookingText}>Payment Mode: Online</Text>
+                  ) : (
+                    <Text style={styles.bookingText}>Payment Mode: COD</Text>
+                  )}
+                  {item?.status === "Pending" && (
+                    <View style={{ marginTop: 15, paddingHorizontal: 1 }}>
+                      <TouchableOpacity onPress={() => onCancel(item)} style={styles.cancelBtn}>
+                        <Text style={styles.cancelText}>Cancel</Text>
+                      </TouchableOpacity>
+                    </View>
+                  )}
+                </View>
+              </TouchableOpacity>
+              <BookingProducts
+                isVisible={modalVisible}
+                item={selectedItem}
+                onCancel={CancelBooking}
+                onClose={handleCloseModal}
+              />
+            </View>
+          )}
+        />
+      ) : (
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <Text style={{ color: "black", fontSize: 22, fontWeight: '500', marginBottom: 20 }}>You are not logged in.</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Login')} style={styles.loginBtn}>
+            <Text style={styles.loginText}>Login</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+    </View>
+  );
 
-                              </View>
-
-                            </View>
-                            {
-                              item.status === "Pending" && (
-                                <View style={{ marginTop: 15, paddingHorizontal: 20 }}>
-                                  <TouchableOpacity onPress={() => CancelBooking(item)}
-                                    style={styles.cancelBtn}>
-                                    <Text style={styles.cancelText}>Cancel</Text>
-                                  </TouchableOpacity>
-                                </View>
-                              )
-                            }
-                          </TouchableOpacity>
-                        </View>
-                      </View>
-                    )
-                      : (
-                        <View style={{ flex: 1,justifyContent: "center", alignItems: "center" }}>
-                          <Text style={{color:"black",fontSize:22,fontWeight:'500'}}>No Booking Available</Text>
-                        </View>
-                      )
-                  }
-                </>
-              )
-            }}
-          />
-      }
-
-      <StatusBar barStyle="dark-content" hidden={false} backgroundColor="#fff" />
-
-    </View >
-  )
-}
+};
 
 export default Booking;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "white"
   },
   bookingContainer: {
     backgroundColor: "white",
-    padding: 20,
+    padding: 8,
 
   },
   bookingText: {
@@ -156,7 +165,6 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: 'black'
   },
-
   productImage: {
     height: 65,
     width: 65,
@@ -165,7 +173,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     backgroundColor: "white",
     paddingVertical: 20,
-    marginBottom: 15
+    marginBottom: 15,
+
   },
   cancelBtn: {
     backgroundColor: "red",
@@ -178,5 +187,22 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 16,
     alignSelf: "center"
-  }
-})
+  },
+  loginBtn: {
+    backgroundColor: "blue",
+    padding: 12,
+    borderRadius: 5,
+  },
+  loginText: {
+    fontWeight: '500',
+    color: "white",
+    fontSize: 16,
+  },
+  bookingCard: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 10,
+    padding: 10,
+
+  },
+});
