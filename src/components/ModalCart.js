@@ -55,7 +55,8 @@ const styles = StyleSheet.create({
     text: {
         color: 'black',
         marginRight: 10,
-        fontSize: 20,
+        fontSize: 22,
+        fontWeight:'500'
     },
     checkoutButton: {
         backgroundColor: 'blue',

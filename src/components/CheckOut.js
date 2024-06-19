@@ -5,6 +5,8 @@ import Header from './Header';
 const CheckOut = ({ navigation, route }) => {
     const [totalPrice, setTotalPrice] = useState(0);
     const { cartItems } = route.params;
+
+    console.log(cartItems)
    
     const calculateTotalPrice = () => {
         const total = cartItems.reduce((sum, item) => sum + (item.dis_price * item.quantity), 0);
@@ -36,7 +38,7 @@ const CheckOut = ({ navigation, route }) => {
                                 <Text style={styles.itemDetail}>Quantity: {item.quantity}</Text>
                             </View>
                             <View>
-                                <Text style={styles.itemDetail}>{item.quantity} * {item.dis_price}</Text>
+                                <Text style={styles.itemDetail}> {item.totalPrice}</Text>
                             </View>
                         </View>
                     </View>
@@ -109,9 +111,9 @@ const styles = StyleSheet.create({
         marginBottom: 10
     },
     itemDetail: {
-        fontSize: 18,
+        fontSize: 22,
         fontWeight: '400',
-        color: 'grey',
+        color: 'black',
     },
     totalPrice: {
         fontSize: 24,

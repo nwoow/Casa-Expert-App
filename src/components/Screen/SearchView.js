@@ -12,7 +12,7 @@ const SearchView = ({ route, }) => {
     const { address, searchText } = route.params;
     const { AddToCart, message, setMessage } = useGlobalContext()
     const [searchCategory, setSearchCategory] = useState([])
-    
+
     const navigation = useNavigation();
 
     const windowWidth = useWindowDimensions().width;
@@ -34,7 +34,7 @@ const SearchView = ({ route, }) => {
         getProduct()
     }, [searchText])
 
-   
+
     const handleSubCategory = (item) => {
         navigation.navigate("ServicePart", { uid: item.uid });
     }
@@ -42,31 +42,31 @@ const SearchView = ({ route, }) => {
     return (
         <View style={styles.container}>
             <Header showBackButton={true} showCart={true} />
-                <View>
-                    <FlatList
-                        data={searchCategory}
-                        renderItem={({ item, index }) => {
-                            return (
-                                <View style={{ paddingHorizontal: 10, marginTop: 20 }}>
-                                    <TouchableOpacity onPress={() => handleSubCategory(item)}>
-                                        <View style={styles.categoryContainer}>
-                                            <Image
-                                                style={styles.categoryImage}
-                                                source={{ uri: `${baseUrl}${item.subcategory_image}` }}
-                                            />
-                                            <Text style={styles.categoryText}>{item.category_name}</Text>
-                                        </View>
-                                    </TouchableOpacity>
-                                </View>
+            <View>
+                <FlatList
+                    data={searchCategory}
+                    renderItem={({ item, index }) => {
+                        return (
+                            <View style={{ paddingHorizontal: 10, marginTop: 20 }}>
+                                <TouchableOpacity onPress={() => handleSubCategory(item)}>
+                                    <View style={styles.categoryContainer}>
+                                        <Image
+                                            style={styles.categoryImage}
+                                            source={{ uri: `${baseUrl}${item.subcategory_image}` }}
+                                        />
+                                        <Text style={styles.categoryText}>{item.category_name}</Text>
+                                    </View>
+                                </TouchableOpacity>
+                            </View>
 
-                            );
-                        }}
-                        horizontal={true}
-                    />
-                </View>
+                        );
+                    }}
+                    horizontal={true}
+                />
+            </View>
 
 
-                {/* <FlatList data={searchProduct} renderItem={({ item, index }) => {
+            {/* <FlatList data={searchProduct} renderItem={({ item, index }) => {
                 return (
                     <View style={{ padding: 10, }}>
                         <View style={styles.card}>
@@ -98,72 +98,73 @@ const SearchView = ({ route, }) => {
                 )
             }} /> */}
 
-            </View>
-            )
+        </View>
+    )
 }
 
-            export default SearchView
+export default SearchView
 
-            const styles = StyleSheet.create({
-                container: {
-                flex: 1,
-            backgroundColor: "white"
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: "white"
     },
-            card: {
-                borderWidth: 2,
-            padding: 15,
-            borderRadius: 10,
-            borderColor: "lightgrey",
-            alignItems: "flex-start",
-            boxSizing: "border-box",
+    card: {
+        borderWidth: 2,
+        padding: 15,
+        borderRadius: 10,
+        borderColor: "lightgrey",
+        alignItems: "flex-start",
+        boxSizing: "border-box",
 
     },
-            cartbtn: {
-                backgroundColor: '#FFAB00',
-            padding: 10,
-            borderRadius: 8,
-            marginTop: 10,
+    cartbtn: {
+        backgroundColor: '#FFAB00',
+        padding: 10,
+        borderRadius: 8,
+        marginTop: 10,
     },
-            line: {
-                height: 1,
-            backgroundColor: 'lightgrey',
+    line: {
+        height: 1,
+        backgroundColor: 'lightgrey',
     },
-            cartbtnText: {
-                color: "black",
-            alignSelf: 'center',
-            fontWeight: '700',
+    cartbtnText: {
+        color: "black",
+        alignSelf: 'center',
+        fontWeight: '700',
     },
-            servicetext: {
-                fontSize: 18,
-            fontWeight: '700',
-            color: "black",
+    servicetext: {
+        fontSize: 18,
+        fontWeight: '700',
+        color: "black",
     },
-            dot: {
-                width: 5,
-            height: 5,
-            borderRadius: 5,
-            backgroundColor: 'grey',
+    dot: {
+        width: 5,
+        height: 5,
+        borderRadius: 5,
+        backgroundColor: 'grey',
     },
-            description: {
-                color: 'grey',
+    description: {
+        color: 'grey',
     },
-            categoryContainer: {
-                backgroundColor: '#f5f5f5',
-            padding: 15,
-            borderRadius: 10,
-            alignItems: 'center',
-            marginBottom: 10,
-            width: 100,
-            width: 100
+    categoryContainer: {
+        backgroundColor: '#f5f5f5',
+        padding: 15,
+        borderRadius: 10,
+        alignItems: 'center',
+        marginBottom: 10,
+        width: '100%',
+        height: '200'
     },
-            categoryImage: {
-                width: 60,
-            height: 60,
-            resizeMode: 'contain',
-            marginBottom: 5,
+    categoryImage: {
+        width: 60,
+        height: 60,
+        resizeMode: 'contain',
+        marginBottom: 5,
     },
-            categoryText: {
-                textAlign: 'center',
+    categoryText: {
+        textAlign: 'center',
+        color:'black'
     },
 
 })

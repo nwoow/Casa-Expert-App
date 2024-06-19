@@ -97,7 +97,13 @@ const Booking = ({ navigation }) => {
                 <View style={styles.bookingCard}>
                   <View style={{ marginBottom: 10, flexDirection: 'row', alignItems: 'center', gap: 12 }}>
                     <Image source={require('../Images/status.png')} style={{ height: 35, width: 35 }} />
-                    <Text style={{ fontSize: 18, fontWeight: '500', color: 'black' }}>{item?.status}</Text>
+                    <Text style={{
+                      fontSize: 18, fontWeight: '500', color: item?.status === 'Pending' ? '#077E8C' :
+                        item.status === 'Canceled' ? 'red' :
+                          item.status === 'Accepted' ? 'lightgreen' :
+                          item.status === 'Completed' ? '#26465' :
+                            'black'
+                    }}>{item?.status}</Text>
                   </View>
                   <Text style={styles.bookingText}>Invoice No:{item.invoice_no}</Text>
                   <View style={{ flexDirection: 'row', gap: 10, marginTop: 5 }}>
@@ -119,7 +125,7 @@ const Booking = ({ navigation }) => {
                   )}
                   {item?.status === "Pending" && (
                     <View style={{ marginTop: 15, paddingHorizontal: 1 }}>
-                      <TouchableOpacity onPress={() => onCancel(item)} style={styles.cancelBtn}>
+                      <TouchableOpacity onPress={() => CancelBooking(item)} style={styles.cancelBtn}>
                         <Text style={styles.cancelText}>Cancel</Text>
                       </TouchableOpacity>
                     </View>
@@ -132,7 +138,7 @@ const Booking = ({ navigation }) => {
                 onCancel={CancelBooking}
                 onClose={handleCloseModal}
               />
-            </View>
+            </View >
           )}
         />
       ) : (
@@ -143,7 +149,7 @@ const Booking = ({ navigation }) => {
           </TouchableOpacity>
         </View>
       )}
-    </View>
+    </View >
   );
 
 };

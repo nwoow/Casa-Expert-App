@@ -262,7 +262,7 @@ const AddressSlot = ({ route, navigation }) => {
                         <Text style={{ fontSize: 18, fontWeight: 500, marginTop: 20, color: "black" }}>Add Address</Text>
                         <View style={{ alignSelf: "center", paddingVertical: 20 }}>
                             <TouchableOpacity
-                                style={{ backgroundColor: "green", padding: 5, borderRadius: 8 }}
+                                style={{ backgroundColor: "green", padding: 15, borderRadius: 8 }}
                                 onPress={fetchLocationData}>
                                 <Text style={{ color: "white", fontWeight: 500, fontSize: 14 }}>Use Current Location</Text>
                             </TouchableOpacity>

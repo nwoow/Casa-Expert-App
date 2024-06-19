@@ -85,7 +85,7 @@ const Cart = ({ navigation }) => {
                           <Text style={styles.servicePrice}>{item.quantity}</Text>
                           <Text style={styles.servicePrice}>service</Text>
                           <View style={styles.dot} />
-                          <Text style={styles.servicePrice}>₹{item.dis_price}</Text>
+                          <Text style={styles.servicePrice}>₹{item.dis_price * item.quantity}</Text>
                         </View>
                         <View style={styles.quantityContainer}>
                           <TouchableOpacity onPress={() => handleQuantityDecrement(item)}
@@ -182,8 +182,8 @@ const styles = StyleSheet.create({
     marginTop: 10
   },
   productname: {
-    fontSize: 24,
-    fontWeight: "500",
+    fontSize: 22,
+    fontWeight: "400",
     color: "black"
 
   },

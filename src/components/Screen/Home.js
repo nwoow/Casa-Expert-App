@@ -11,7 +11,7 @@ import Search from '../Search'
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Video from 'react-native-video';
 
-const { width, height } = Dimensions.get('window');
+
 
 const Home = ({ route, }) => {
     const { addressData } = route.params
@@ -34,8 +34,8 @@ const Home = ({ route, }) => {
         { id: '3', videoUri: require('../Images/repairing.mp4') },
     ];
 
-    const handleAddressChange = useCallback(async () => {
-        if (!newAddress) {
+    const handleAddressChange = useCallback(() => {
+        if (!newAddress.trim()) {
             setMessage('Enter Address');
             setTimeout(() => {
                 setMessage('');
@@ -45,16 +45,21 @@ const Home = ({ route, }) => {
         setModalVisible(false);
         // Here you can perform any further action with the newAddress, such as updating it in the backend
     }, [newAddress]);
+
     const handleItemPress = ((uid) => {
         setSelectedUid(uid);
         setShowModel(true)
     })
 
     const closeModel = () => {
-        setShowModel(false)
-    }
+        setShowModel(false);
+        if (!newAddress) {
+            setNewAddress(addressData.city);
+        }
+    };
 
     const handleCategory = () => {
+        setLoading(true);
         axios.get(`${baseUrl}/api/show-category/?address=${newAddress}`)
             .then((res) => {
 
@@ -184,13 +189,23 @@ const Home = ({ route, }) => {
                         visible={modalVisible}
                         animationType="slide"
                         transparent={true}
-                        onRequestClose={() => setModalVisible(false)}
+                        onRequestClose={() => {
+                            setModalVisible(false);
+                            if (!newAddress) {
+                                setNewAddress(addressData.city);
+                            }
+                        }}
                     >
                         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.5)', }}>
                             <View style={{ backgroundColor: 'white', padding: 20, borderRadius: 10, width: "80%", height: 200, position: 'relative' }}>
                                 <TouchableOpacity
                                     style={{ position: 'absolute', top: 10, right: 10 }}
-                                    onPress={() => setModalVisible(false)}
+                                    onPress={() => {
+                                        setModalVisible(false);
+                                        if (!newAddress) {
+                                            setNewAddress(addressData.city);
+                                        }
+                                    }}
                                 >
                                     <Ionicons name="close" size={24} color="red" />
                                 </TouchableOpacity>
@@ -203,7 +218,7 @@ const Home = ({ route, }) => {
                                     onChangeText={setNewAddress}
                                     style={{ marginBottom: 10, borderBottomWidth: 1, borderBottomColor: 'grey', color: "black", marginTop: 30 }}
                                 />
-                                <Button title="Update Address" onPress={() => handleAddressChange(newAddress)} />
+                                <Button title="Update City" onPress={() => handleAddressChange(newAddress)} />
                             </View>
                         </View>
                     </Modal>
