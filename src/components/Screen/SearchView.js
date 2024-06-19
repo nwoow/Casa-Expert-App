@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, FlatList, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, Image, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useWindowDimensions } from 'react-native';
 import HTML from 'react-native-render-html';
@@ -12,21 +12,26 @@ const SearchView = ({ route, }) => {
     const { address, searchText } = route.params;
     const { AddToCart, message, setMessage } = useGlobalContext()
     const [searchCategory, setSearchCategory] = useState([])
+    const [loading, setLoading] = useState(false)
 
     const navigation = useNavigation();
 
     const windowWidth = useWindowDimensions().width;
 
     const getProduct = async () => {
+        setLoading(true)
         await axios.get(`${baseUrl}/api/search-view/?address=${address}&query=${searchText}`)
             .then((res) => {
                 setSearchCategory(res.data.subcategory)
                 if (res.data.subcategory.length === 0) {
                     return alert('No Product Found')
                 }
+                setLoading(false)
             })
             .catch((error) => {
-                console.log(error)
+                setLoading(false)
+                return alert('Something went Wrong')
+
             })
     }
 
@@ -43,26 +48,34 @@ const SearchView = ({ route, }) => {
         <View style={styles.container}>
             <Header showBackButton={true} showCart={true} />
             <View>
-                <FlatList
-                    data={searchCategory}
-                    renderItem={({ item, index }) => {
-                        return (
-                            <View style={{ paddingHorizontal: 10, marginTop: 20 }}>
-                                <TouchableOpacity onPress={() => handleSubCategory(item)}>
-                                    <View style={styles.categoryContainer}>
-                                        <Image
-                                            style={styles.categoryImage}
-                                            source={{ uri: `${baseUrl}${item.subcategory_image}` }}
-                                        />
-                                        <Text style={styles.categoryText}>{item.category_name}</Text>
+                {
+                    loading ?
+                        <View>
+                            <ActivityIndicator size="large" color="red" />
+                        </View>
+                        :
+                        <FlatList
+                            data={searchCategory}
+                            renderItem={({ item, index }) => {
+                                return (
+                                    <View style={{ paddingHorizontal: 10, marginTop: 20 }}>
+                                        <TouchableOpacity onPress={() => handleSubCategory(item)}>
+                                            <View style={styles.categoryContainer}>
+                                                <Image
+                                                    style={styles.categoryImage}
+                                                    source={{ uri: `${baseUrl}${item.subcategory_image}` }}
+                                                />
+                                                <Text style={styles.categoryText}>{item.category_name}</Text>
+                                            </View>
+                                        </TouchableOpacity>
                                     </View>
-                                </TouchableOpacity>
-                            </View>
 
-                        );
-                    }}
-                    horizontal={true}
-                />
+                                );
+                            }}
+                            horizontal={true}
+                        />
+                }
+
             </View>
 
 
@@ -164,7 +177,7 @@ const styles = StyleSheet.create({
     },
     categoryText: {
         textAlign: 'center',
-        color:'black'
+        color: 'black'
     },
 
 })
