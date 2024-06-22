@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, TouchableOpacity, Image, ActivityIndicator, FlatList, TextInput, ScrollView } from 'react-native'
 import React, { useState, useEffect } from 'react'
-import { format, addDays,  } from 'date-fns';
+import { format, addDays, } from 'date-fns';
 import Geolocation from 'react-native-geolocation-service';
 import axios from 'axios'
 import { baseUrl } from './Constant';
@@ -38,18 +38,20 @@ const AddressSlot = ({ route, navigation }) => {
 
     //subCategoryUid 
     const uid = cartItem[0].subcat_uid;
-   
+
+
     // Create productList
     const filteredProducts = cartItems.map(product => ({
         uid: product.uid,
         quantity: product.quantity
     }));
 
-     const totalProductPrice = totalPrice;
-    
+    const totalProductPrice = totalPrice;
+
     const handleTime = (async () => {
         setLoading(true)
         const sdate = selectedDate;
+        console.log('sdate', sdate)
         const token = await AsyncStorage.getItem('token')
         await axios.get(`${baseUrl}/api/time-slot/${uid}?sdate=${sdate}`, {
             headers: { 'Authorization': `Bearer ${token}` },
@@ -70,7 +72,7 @@ const AddressSlot = ({ route, navigation }) => {
         // Assuming current year and month
         const currentDate = new Date();
         const currentYear = currentDate.getFullYear();
-        const currentMonth = currentDate.getMonth() + 1; // Months are zero-indexed in JavaScript
+        const currentMonth = String(new Date().getMonth() + 1).padStart(2, '0');  // Months are zero-indexed in JavaScript
 
         // Create a string in 'yyyy-MM-dd' format
         const formattedDate = `${currentYear}-${currentMonth}-${date}`;
@@ -102,7 +104,7 @@ const AddressSlot = ({ route, navigation }) => {
                 return;
             }
             const token = await AsyncStorage.getItem('token');
-            const product_list= filteredProducts;
+            const product_list = filteredProducts;
             const full_name = name;
             const email = emailId;
             const addressline = address;
@@ -113,8 +115,8 @@ const AddressSlot = ({ route, navigation }) => {
             const zipcode = pincode;
             const time_slot = selectedTime;
             const booking_time = selectedDate;
-            const paid_amount= totalProductPrice
-            const data = { full_name, email, addressline, city, state, phone, locality, zipcode, time_slot, booking_time, product_list,paid_amount  }
+            const paid_amount = totalProductPrice
+            const data = { full_name, email, addressline, city, state, phone, locality, zipcode, time_slot, booking_time, product_list, paid_amount }
 
             const response = await axios.post(`${baseUrl}/api/orderlist/`, data, {
                 headers: { 'Authorization': `Bearer ${token}` },
