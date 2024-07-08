@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, Image } from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
 import axios from 'axios';
-import SplashScreen from 'react-native-splash-screen';
 import { PermissionsAndroid } from 'react-native';
+import SplashScreen from 'react-native-splash-screen';
+
 
 const requestLocationPermission = async () => {
     try {

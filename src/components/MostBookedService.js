@@ -18,8 +18,8 @@ const MostBookedService = ({ service }) => {
             <View style={{ flex: 1, marginTop: 10, }}>
                 <TouchableOpacity onPress={() => handleItemClick(item)}>
                     <Image source={{ uri: `${baseUrl}/${item.image}` }} style={{ width: 130, height: 130, resizeMode: "cover", borderRadius: 10, }} />
-                    <View style={{ width: 140, marginTop: 10, width: 150, }}>
-                        <Text style={[styles.servicetext, { fontSize: 15, fontWeight: '500',color:"black" }]}>{item.product_name}</Text>
+                    <View style={{ width: 140, marginTop: 10, width: 150, marginHorizontal:10 }}>
+                        <Text style= {{fontSize: 14, fontFamily: 'Segoe UI Bold ', color: "black" }}>{item.product_name}</Text>
                     </View>
                 </TouchableOpacity>
             </View>
@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     },
     bookedtxt: {
         fontSize: 23,
-        fontWeight: "bold",
-        color:'black'
+        color: 'black',
+        fontFamily: 'Segoe UI Bold',
     }
 })

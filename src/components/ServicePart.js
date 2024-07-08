@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Text, Image, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
 import axios from 'axios';
-import HTML from 'react-native-render-html';
+import HTML, { RenderHTML } from 'react-native-render-html';
 import Header from './Header';
 import { useWindowDimensions } from 'react-native';
 import { useGlobalContext } from './Context';
 import { useIsFocused } from '@react-navigation/native';
 import ModalCart from './ModalCart';
 import { baseUrl } from './Constant';
+
 
 const ServicePart = ({ route }) => {
     const [product, setProduct] = useState([]);
@@ -21,6 +22,7 @@ const ServicePart = ({ route }) => {
         try {
             const res = await axios.get(`${baseUrl}/api/service/${uid}`);
             setProduct(res.data.service);
+            console.log(res.data.service)
         } catch (error) {
             console.log(error);
         } finally {
@@ -44,11 +46,12 @@ const ServicePart = ({ route }) => {
         handleDecrement(item);
     };
 
+
     return (
         <View style={{ flex: 1, backgroundColor: 'white' }}>
             <Header showBackButton={true} showCart={true} />
             <View style={[styles.shadow, { paddingHorizontal: 25, padding: 10 }]}>
-                <Text style={{ fontSize: 30, fontWeight: '500', fontFamily: 'OpenSans_600SemiBold', color: "black" }}>{category}</Text>
+                <Text style={{ fontSize: 22, fontFamily: 'Segoe UI Bold', color: "black" }}>{category}</Text>
             </View>
             {isLoading ? (
                 <View style={[styles.loaderContainer, { backgroundColor: 'rgba(255, 0, 0, 0.1)' }]}>
@@ -64,13 +67,28 @@ const ServicePart = ({ route }) => {
                                 <View style={styles.card}>
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                         <View style={{ width: 200 }}>
-                                            <Text style={styles.servicetext}>{item.product_name}</Text>
+                                            <Text style={[styles.servicetext, { marginBottom: 8 }]}>{item.product_name}</Text>
                                             <Text style={styles.servicetext}>Price: ₹{item.dis_price}</Text>
-                                            <HTML
+
+                                            <RenderHTML
                                                 source={{ html: item.product_description }}
                                                 contentWidth={windowWidth - 20}
-                                                tagsStyles={{ p: { color: 'black' } }}
+                                                tagsStyles={{
+                                                    li: {
+                                                        color: 'black',
+                                                        fontSize: 14,
+                                                        fontFamily: 'Arial',
+                                                        marginBottom: 8,
+                                                    },
+                                                    p: {
+                                                        color: 'black',
+                                                        fontSize: 14,
+                                                        fontFamily: 'Arial',
+                                                        marginBottom: 8,
+                                                    },
+                                                }}
                                             />
+
                                         </View>
                                         <View>
                                             <Image
@@ -102,7 +120,7 @@ const ServicePart = ({ route }) => {
                         );
                     }}
                     keyExtractor={(item) => item.uid}
-                    contentContainerStyle={{ paddingBottom: 70 }}
+                    contentContainerStyle={{ paddingBottom: 30 }}
                 />
             )}
             {isItemAddedToCart && <ModalCart cartItems={cartItems} />}
@@ -132,7 +150,7 @@ const styles = StyleSheet.create({
     },
     cartbtnaddText: {
         color: "#rgb(110, 66, 229)",
-        fontSize: 20,
+        fontSize: 16,
         padding: 8,
         alignSelf: "center",
         fontWeight: '600'
@@ -145,8 +163,8 @@ const styles = StyleSheet.create({
         marginLeft: 5,
     },
     servicetext: {
-        fontSize: 18,
-        fontWeight: '700',
+        fontSize: 16,
+        fontFamily: 'Segoe UI Bold',
         color: 'black',
     },
     QuantityContainer: {

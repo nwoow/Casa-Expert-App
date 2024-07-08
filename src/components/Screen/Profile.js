@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
     },
     name: {
         fontSize: 22,
-        fontWeight: '600',
+        fontFamily:'Segoe UI Bold',
         color: 'black'
     },
 
@@ -211,7 +211,7 @@ const styles = StyleSheet.create({
     loginbtnText: {
         color: "#fff",
         fontSize: 16,
-        fontWeight: '500',
+        fontFamily:'Segoe UI Bold',
         alignSelf: "center"
     },
     profileContainer: {
@@ -219,7 +219,9 @@ const styles = StyleSheet.create({
         padding: 10
     },
     profileText: {
-        color: "black"
+        color: "black",
+        fontFamily:'Segoe UI ',
+        fontSize:16
     }
 
 })

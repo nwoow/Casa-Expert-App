@@ -92,7 +92,6 @@ const AddressSlot = ({ route, navigation }) => {
     }, [selectedDate]);
 
     const handleOrder = async () => {
-
         try {
             if (!selectedTime || !selectedDate || !pincode || !address || !scity || !states || !localitys) {
                 console.log(selectedTime);
@@ -123,7 +122,6 @@ const AddressSlot = ({ route, navigation }) => {
             });
             console.log("response", response.data)
             if (response.data.status === 200) {
-                console.log('Navigating to Payment screen');
                 setLoading(false);
                 navigation.navigate("Payment", {
                     title: 'Choose Payment Option',
@@ -132,11 +130,11 @@ const AddressSlot = ({ route, navigation }) => {
                     productUid: filteredProducts,
                 });
             } else {
+                setLoading(false); // Stop loader
                 console.log('Received non-200 status:', response.data.status);
                 ToastAndroid.show("Something went wrong", ToastAndroid.SHORT);
             }
         } catch (error) {
-
             setLoading(false);
         }
     };

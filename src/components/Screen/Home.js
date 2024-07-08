@@ -10,7 +10,7 @@ import { baseUrl } from '../Constant'
 import Search from '../Search'
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Video from 'react-native-video';
-
+import messaging from '@react-native-firebase/messaging';
 
 
 const Home = ({ route, }) => {
@@ -25,6 +25,7 @@ const Home = ({ route, }) => {
     const [noServicesAvailable, setNoServicesAvailable] = useState(false);
     const [serviceType, setServiceType] = useState([])
     const [mostBooked, setMostBooked] = useState([])
+    
 
     const useFocused = useIsFocused()
 
@@ -170,6 +171,8 @@ const Home = ({ route, }) => {
     //     });
     // }, []);
 
+   
+
     return (
         <View style={styles.container}>
             <ScrollView>
@@ -179,7 +182,7 @@ const Home = ({ route, }) => {
                         <View style={{ flexDirection: 'row', alignItems: "center", paddingHorizontal: 25, gap: 10 }}>
                             <Image source={require('../Images/location-pin.png')} style={{ height: 20, width: 20 }} />
                             <View>
-                                <Text style={{ fontSize: 18, fontWeight: "500", color: '#454545' }}>{newAddress}</Text>
+                                <Text style={{ fontSize: 20, fontWeight: "500", color: '#454545',fontFamily: 'Segoe UI Bold' }}>{newAddress}</Text>
                             </View>
                             <Image source={require('../Images/down-arrow.png')} style={{ width: 20, height: 20 }} />
                         </View>
@@ -210,13 +213,13 @@ const Home = ({ route, }) => {
                                     <Ionicons name="close" size={24} color="red" />
                                 </TouchableOpacity>
                                 {message && (
-                                    <Text style={{ color: 'red', fontWeight: '500', fontSize: 16, alignSelf: 'center' }}>{message}</Text>
+                                    <Text style={{ color: 'red', fontSize: 16, alignSelf: 'center',fontFamily: 'Segoe UI Bold' }}>{message}</Text>
                                 )}
                                 <TextInput
                                     placeholder="Enter new address"
                                     value={newAddress}
                                     onChangeText={setNewAddress}
-                                    style={{ marginBottom: 10, borderBottomWidth: 1, borderBottomColor: 'grey', color: "black", marginTop: 30 }}
+                                    style={{ marginBottom: 10, borderBottomWidth: 1, borderBottomColor: 'grey', color: "black", marginTop: 30,fontFamily: 'Segoe UI Bold',fontSize:20 }}
                                 />
                                 <Button title="Update City" onPress={() => handleAddressChange(newAddress)} />
                             </View>
@@ -275,6 +278,7 @@ const Home = ({ route, }) => {
                                         <RepairService
                                             title={item.service_name}
                                             serviceProduct={item.service_product}
+                                            
                                         />
                                     </View>
                                 )
@@ -315,10 +319,10 @@ const styles = StyleSheet.create({
         objectFit: "contain"
     },
     servicetext: {
-        fontWeight: 'normal',
-        fontFamily: 'OpenSans_600SemiBold',
+        fontFamily: 'Segoe UI',
         textAlign: "center",
-        color: 'black'
+        color: 'black',
+        fontSize:18,
     },
     gapDesign: {
         backgroundColor: "#fff",

@@ -7,10 +7,9 @@ const BookingProducts = ({ isVisible, item, onCancel, onClose }) => {
     const renderItem = ({ item: product }) => (
 
         <View style={styles.productContainer}>
-            {console.log("item", product.quantity)}
             <View style={{ flexDirection: "row", alignItems: 'center', gap: 20, backgroundColor: '#f5f5f5', borderRadius: 5, padding: 10 }}>
                 <Image source={{ uri: `${baseUrl}/${product.product.image}` }} style={styles.productImage} />
-                <View style={{ marginLeft: 20, width: '90%' }}>
+                <View style={{ marginLeft: 10, width: '85%',padding:25 }}>
                     <Text style={{ fontSize: 16, fontWeight: "500", color: 'black' }}>{product.product.product_name}</Text>
                     <View style={{ flexDirection: 'row', gap: 10, marginTop: 5, gap:30 }}>
                         <Text style={{ fontSize: 16, color: 'black',fontWeight: "500" }}>Quantity: {product.quantity}</Text>

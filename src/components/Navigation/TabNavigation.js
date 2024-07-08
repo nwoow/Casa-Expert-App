@@ -35,7 +35,7 @@ function TabNavigation({ route }) {
                         return (
                             <View style={{ alignItems: "center", justifyContent: "center", top: 10 }}>
                                 <Image source={require('../Images/home-btn.png')} resizeMode='contain' style={{ height: 20, width: 20, tintColor: focused ? "#010203" : "#d3d3d3", marginBottom: 3 }} />
-                                <Text style={{ color: focused ? "#010203" : "silver", fontSize: 14, fontWeight: 500, marginBottom: 20 }}>Home</Text>
+                                <Text style={{ color: focused ? "#010203" : "silver", fontSize: 18,  fontFamily:'Segoe UI Bold', marginBottom: 20 }}>Home</Text>
                             </View>
                         )
                     }
@@ -46,7 +46,7 @@ function TabNavigation({ route }) {
                         return (
                             <View style={{ alignItems: "center", justifyContent: "center", top: 10 }}>
                                 <Image source={require('../Images/event.png')} resizeMode='contain' style={{ height: 20, width: 20, tintColor: focused ? "#010203" : "#d3d3d3", marginBottom: 3 }} />
-                                <Text style={{ color: focused ? "#010203" : "#d3d3d3", fontSize: 14, fontWeight: 500, marginBottom: 20 }}>Booking</Text>
+                                <Text style={{ color: focused ? "#010203" : "#d3d3d3", fontSize: 18, fontFamily:'Segoe UI Bold', marginBottom: 20 }}>Booking</Text>
                             </View>
                         )
                     }
@@ -57,7 +57,7 @@ function TabNavigation({ route }) {
                         return (
                             <View style={{ alignItems: "center", justifyContent: "center", top: 10 }}>
                                 <Image source={require('../Images/user.png')} resizeMode='contain' style={{ height: 20, width: 20, tintColor: focused ? "#010203" : "#d3d3d3", marginBottom: 3 }} />
-                                <Text style={{ color: focused ? "#010203" : "#d3d3d3", fontSize: 14, fontWeight: 500, marginBottom: 20 }}>Profile</Text>
+                                <Text style={{ color: focused ? "#010203" : "#d3d3d3", fontSize: 18, fontFamily:'Segoe UI Bold', marginBottom: 20 }}>Profile</Text>
                             </View>
                         )
                     }

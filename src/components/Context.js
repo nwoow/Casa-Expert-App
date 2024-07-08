@@ -1,8 +1,10 @@
-import { createContext, useContext, useEffect, useRef, useReducer, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useReducer, useState, useCallback } from "react";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { baseUrl } from "./Constant";
 import axios from "axios";
 import { useNavigation } from '@react-navigation/native';
+import messaging from '@react-native-firebase/messaging';
+
 
 const AppContext = createContext();
 
@@ -104,6 +106,40 @@ const AppProvider = ({ children, }) => {
             })
     }
 
+    const getNotificationToken = useCallback(async () => {
+        try {
+          const tokens = await AsyncStorage.getItem('token');
+          const token = await messaging().getToken();
+          await axios.post(
+            `${baseUrl}/api/set-message-token-user/`,
+            { token },
+            {
+              headers: {
+                Authorization: `Bearer ${tokens}`,
+              },
+            },
+          );
+        } catch (error) {
+          console.error('Error getting token in login', error);
+        }
+      }, []);
+
+      useEffect(() => {
+        const unsubscribe = messaging().onMessage(async remoteMessage => {
+          console.log('Foreground notification received:', remoteMessage);
+        });
+    
+        messaging().setBackgroundMessageHandler(async remoteMessage => {
+          console.log('Background notification received:', remoteMessage);
+         
+        });
+    
+        return () => {
+          unsubscribe();
+        };
+      }, []);
+
+    
     const verifyOtp = (mobile, otp) => {
         const phone_number = mobile
         axios.post(`${baseUrl}/api/verify-otp/`, { phone_number, otp, })
@@ -112,6 +148,7 @@ const AppProvider = ({ children, }) => {
                     AsyncStorage.setItem('isLoggedIn', JSON.stringify(true));
                     AsyncStorage.setItem('token', res.data.access);
                     setLoggedIn(true);
+                    getNotificationToken();
                     console.log("isLoggedIn", true);
                     navigation.navigate("Cart")
 

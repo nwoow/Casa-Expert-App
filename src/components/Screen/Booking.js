@@ -23,7 +23,8 @@ const Booking = ({ navigation }) => {
       const response = await axios.get(`${baseUrl}/api/orderlist/`, {
         headers: { 'Authorization': `Bearer ${token}` },
       });
-      console.log(response.data.order[0].booking_products[0]);
+      // console.log("res",response.data.order[0].booking_products[0]);
+      // console.log("data",response.data.order)
       setOrder(response.data.order);
       setLoading(false);
     } catch (error) {
@@ -40,7 +41,7 @@ const Booking = ({ navigation }) => {
       headers: { 'Authorization': `Bearer ${token}` },
     })
       .then((res) => {
-        console.log(res.data);
+        console.log("data", res.data);
         alert(res.data.message);
         bookingOrder();
       })
@@ -64,7 +65,6 @@ const Booking = ({ navigation }) => {
     setSelectedItem(null);
   };
 
-
   useEffect(() => {
     if (isLoggedIn) {
       bookingOrder();
@@ -80,7 +80,7 @@ const Booking = ({ navigation }) => {
         <Text style={styles.bookingText}>My Booking</Text>
       </View>
       <View style={{ padding: 10, alignSelf: 'center' }}>
-        <Text style={{ fontSize: 11, fontWeight: '500', color: 'red' }}>Note:- You Can Cancel Only before 1hr Booking Time/Date</Text>
+        <Text style={{ fontSize: 14, fontFamily:'Segoe UI Bold', color: 'red' }}>Note:- You Can Cancel Only before 1hr Booking Time/Date</Text>
       </View>
 
       {loading ? (
@@ -98,11 +98,11 @@ const Booking = ({ navigation }) => {
                   <View style={{ marginBottom: 10, flexDirection: 'row', alignItems: 'center', gap: 12 }}>
                     <Image source={require('../Images/status.png')} style={{ height: 35, width: 35 }} />
                     <Text style={{
-                      fontSize: 18, fontWeight: '500', color: item?.status === 'Pending' ? '#077E8C' :
+                      fontSize: 18,fontFamily:'Segoe UI Bold', color: item?.status === 'Pending' ? '#077E8C' :
                         item.status === 'Canceled' ? 'red' :
-                          item.status === 'Accepted' ? 'lightgreen' :
-                          item.status === 'Completed' ? '#26465' :
-                            'black'
+                          item.status === 'Accepted' ? 'darkorange' :
+                            item.status === 'Completed' ? 'darkgreen' : "black"
+
                     }}>{item?.status}</Text>
                   </View>
                   <Text style={styles.bookingText}>Invoice No:{item.invoice_no}</Text>
@@ -117,7 +117,7 @@ const Booking = ({ navigation }) => {
                       : null
                     }
                   </View>
-                  <Text style={styles.bookingText}>Total Price:{item.paid_amount}</Text>
+                  <Text style={styles.bookingText}>Total Price:{item.payble_amount}</Text>
                   {item.is_paid ? (
                     <Text style={styles.bookingText}>Payment Mode: Online</Text>
                   ) : (
@@ -132,12 +132,7 @@ const Booking = ({ navigation }) => {
                   )}
                 </View>
               </TouchableOpacity>
-              <BookingProducts
-                isVisible={modalVisible}
-                item={selectedItem}
-                onCancel={CancelBooking}
-                onClose={handleCloseModal}
-              />
+
             </View >
           )}
         />
@@ -149,6 +144,12 @@ const Booking = ({ navigation }) => {
           </TouchableOpacity>
         </View>
       )}
+      <BookingProducts
+        isVisible={modalVisible}
+        item={selectedItem}
+        onCancel={CancelBooking}
+        onClose={handleCloseModal}
+      />
     </View >
   );
 
@@ -167,9 +168,9 @@ const styles = StyleSheet.create({
 
   },
   bookingText: {
-    fontSize: 20,
-    fontWeight: '500',
-    color: 'black'
+    fontSize: 14,
+    color: 'black',
+    fontFamily:'Segoe UI Bold',
   },
   productImage: {
     height: 65,
@@ -189,9 +190,9 @@ const styles = StyleSheet.create({
     width: 80
   },
   cancelText: {
-    fontWeight: '500',
+    fontFamily:'Segoe UI Bold',
     color: "white",
-    fontSize: 16,
+    fontSize: 14,
     alignSelf: "center"
   },
   loginBtn: {

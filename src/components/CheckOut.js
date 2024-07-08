@@ -7,7 +7,7 @@ const CheckOut = ({ navigation, route }) => {
     const { cartItems } = route.params;
 
     console.log(cartItems)
-   
+
     const calculateTotalPrice = () => {
         const total = cartItems.reduce((sum, item) => sum + (item.dis_price * item.quantity), 0);
         setTotalPrice(total);
@@ -38,7 +38,7 @@ const CheckOut = ({ navigation, route }) => {
                                 <Text style={styles.itemDetail}>Quantity: {item.quantity}</Text>
                             </View>
                             <View>
-                                <Text style={styles.itemDetail}> {item.totalPrice}</Text>
+                                <Text style={styles.itemDetail}>₹{item.totalPrice}</Text>
                             </View>
                         </View>
                     </View>
@@ -111,13 +111,14 @@ const styles = StyleSheet.create({
         marginBottom: 10
     },
     itemDetail: {
-        fontSize: 22,
+        fontSize: 20,
         fontWeight: '400',
         color: 'black',
+        fontFamily: 'Segoe UI'
     },
     totalPrice: {
         fontSize: 24,
-        fontWeight: 'bold',
-        color:"black"
+        color: "black",
+        fontFamily: 'Segoe UI Bold'
     }
 });

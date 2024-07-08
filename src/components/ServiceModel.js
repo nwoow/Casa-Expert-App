@@ -41,7 +41,7 @@ const ServiceModel = ({ showModel, closeModel, selectedUid, }) => {
                             <Image source={require('./Images/close.png')} style={{ width: 20, height: 20, marginLeft: 10, marginTop: 10 }} />
                         </TouchableOpacity>
                         <View style={{ marginHorizontal: 20, }}>
-                            <Text style={{ fontSize: 24, fontWeight: 500 }}>{categoryName}</Text>
+                            <Text style={{ fontSize: 24, fontWeight: 500,color:"black",fontFamily:"Segoe UI Bold" }}>{categoryName}</Text>
                         </View>
                         <View style={styles.horizontalLine} />
 
@@ -111,8 +111,8 @@ const styles = StyleSheet.create({
         alignSelf: "center"
     },
     textsubcategory: {
-        fontSize: 14,
-        fontWeight: '500',
+        fontSize: 12,
+       fontFamily:"Segoe UI ",
         alignSelf: "center",
         color:"black",
     },

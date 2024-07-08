@@ -1,9 +1,6 @@
 import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react';
-import axios from 'axios'
-import { baseUrl } from './Constant';
 import { useGlobalContext } from './Context';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Otp = ({ route, navigation }) => {
     const { mobile } = route.params;
@@ -40,7 +37,6 @@ const Otp = ({ route, navigation }) => {
     const handleVerifyOtp = () => {
         const otp = `${box1}${box2}${box3}${box4}${box5}${box6}`;
         verifyOtp(mobile, otp);
-      
     }
 
     const handleResendOtp = () => {

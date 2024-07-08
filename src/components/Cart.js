@@ -140,7 +140,7 @@ const Cart = ({ navigation }) => {
       }
 
       {cartItems.length > 0 && (
-        <View style={{  justifyContent: "flex-end", alignItems: "center", marginBottom: 10 }}>
+        <View style={{ justifyContent: "flex-end", alignItems: "center", marginBottom: 10 }}>
           <TouchableOpacity style={styles.checkOutButton} onPress={() => handleCheckout(cartItems[0])}>
             <Text style={styles.checkOutButtonText}>Checkout</Text>
           </TouchableOpacity>
@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
   },
   cartText: {
     fontSize: 24,
-    fontWeight: "500",
+    fontFamily: "Segoe UI Bold",
     color: "black"
   },
   horizontalLine: {
@@ -182,9 +182,9 @@ const styles = StyleSheet.create({
     marginTop: 10
   },
   productname: {
-    fontSize: 22,
-    fontWeight: "400",
-    color: "black"
+    fontSize: 20,
+    color: "black",
+    fontFamily:'Segoe UI '
 
   },
   servicePrice: {
